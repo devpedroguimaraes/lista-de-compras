@@ -1,37 +1,29 @@
-# Nossa Lista ❤️ — versão definitiva Firebase
+# Nossa Lista ❤️ — Firebase
 
-Aplicação de lista de compras compartilhada em tempo real usando Firebase Authentication (anônimo) + Cloud Firestore.
+Versão definitiva com Firebase Authentication anônimo + Cloud Firestore em tempo real.
 
-## Projeto Firebase
-
+## Firebase
 Projeto: `nossa-lista-de-compras-6d467`
 
-A configuração já está em `firebase.js`.
+No Firebase Console, habilite:
+1. Authentication → Sign-in method → Anonymous.
+2. Firestore Database.
 
-## Antes de publicar
+## Regras do Firestore
+Para o compartilhamento simples entre os usuários deste aplicativo, use temporariamente as regras abaixo no Firestore Rules:
 
-No Firebase Console:
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /shoppingItems/{itemId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
 
-1. Abra **Authentication > Sign-in method**.
-2. Ative **Anonymous (Anônimo)**.
-3. Abra **Firestore Database** e crie o banco.
-4. Em **Rules**, publique o conteúdo de `firestore.rules`.
+A configuração Web já está incluída em `firebase-config.js`.
 
-As regras permitem leitura e gravação somente para usuários autenticados. A aplicação autentica cada visitante anonimamente antes de abrir a lista.
-
-## Publicação no GitHub Pages
-
-Envie todos os arquivos mantendo a estrutura:
-
-- `index.html`
-- `firebase.js`
-- `js/app.js`
-- `css/style.css`
-- `manifest.json`
-- `firestore.rules`
-
-Não é necessário executar servidor local.
-
-## Importante
-
-A lista é compartilhada: os itens ficam na coleção `shoppingItems` e qualquer usuário autenticado anonimamente verá as alterações em tempo real.
+## GitHub Pages
+Envie todos os arquivos para o repositório e publique pela branch `main`. O arquivo `firebase-config.js` precisa estar no mesmo nível do `index.html`.
