@@ -38,7 +38,10 @@ function normalize(item) {
 }
 
 async function addItem(name, quantity, category) {
-  if (!state.user) return;
+  if (!state.user) {
+    setStatus("Aguardando conexão com o Firebase...", false);
+    return false;
+  }
   try {
     await addDoc(collectionRef, {
       name: name.trim(),
@@ -48,9 +51,15 @@ async function addItem(name, quantity, category) {
       createdAt: serverTimestamp(),
       owner: state.user.uid
     });
+    setStatus("Item salvo no Firebase");
+    return true;
   } catch (error) {
-    console.error(error);
-    setStatus("Erro ao adicionar", false);
+    console.error("Erro ao adicionar item:", error);
+    const code = error?.code || "";
+    if (code.includes("permission-denied")) setStatus("Firebase: permissão negada", false);
+    else if (code.includes("unauthenticated")) setStatus("Firebase: autenticação não ativa", false);
+    else setStatus("Erro ao salvar no Firebase", false);
+    return false;
   }
 }
 
@@ -178,12 +187,14 @@ form.addEventListener("submit", async e => {
 
   const button = form.querySelector(".add-btn");
   button.disabled = true;
-  await addItem(name, quantityInput.value, categoryInput.value);
+  const saved = await addItem(name, quantityInput.value, categoryInput.value);
   button.disabled = false;
 
-  nameInput.value = "";
-  quantityInput.value = "";
-  nameInput.focus();
+  if (saved) {
+    nameInput.value = "";
+    quantityInput.value = "";
+    nameInput.focus();
+  }
 });
 
 $("clearDoneBtn").addEventListener("click", clearDone);
@@ -194,9 +205,16 @@ $("clearDoneBtn").addEventListener("click", clearDone);
   try {
     const result = await signInAnonymously(auth);
     state.user = result.user;
+    setStatus("Conectado ao Firebase");
     listenToList();
   } catch (error) {
-    console.error(error);
-    setStatus("Não foi possível conectar", false);
+    console.error("Erro de autenticação Firebase:", error);
+    if (error?.code === "auth/operation-not-allowed") {
+      setStatus("Ative o login anônimo no Firebase", false);
+    } else if (error?.code === "auth/configuration-not-found") {
+      setStatus("Firebase Authentication não configurado", false);
+    } else {
+      setStatus("Não foi possível conectar ao Firebase", false);
+    }
   }
 })();

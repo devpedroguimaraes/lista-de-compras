@@ -1,43 +1,37 @@
-# Nossa Lista ❤️ — versão definitiva
+# Nossa Lista ❤️ — versão definitiva Firebase
 
-Lista de compras compartilhada em tempo real para duas pessoas.
+Aplicação de lista de compras compartilhada em tempo real usando Firebase Authentication (anônimo) + Cloud Firestore.
 
-## Firebase configurado
+## Projeto Firebase
 
 Projeto: `nossa-lista-de-compras-6d467`
 
-A aplicação usa:
-- Firebase Authentication com login anônimo;
-- Cloud Firestore;
-- sincronização em tempo real;
-- GitHub Pages compatível, sem build obrigatório.
+A configuração já está em `firebase.js`.
 
-## Funcionalidades
+## Antes de publicar
 
-- Adicionar item;
-- quantidade;
-- categorias;
-- marcar como comprado;
-- excluir item;
-- limpar comprados;
-- contadores de pendentes, total e progresso;
-- sincronização automática entre os dispositivos;
-- atualização em tempo real;
-- PWA/manifest;
-- layout responsivo.
+No Firebase Console:
 
-## Firestore
+1. Abra **Authentication > Sign-in method**.
+2. Ative **Anonymous (Anônimo)**.
+3. Abra **Firestore Database** e crie o banco.
+4. Em **Rules**, publique o conteúdo de `firestore.rules`.
 
-Coleção usada:
-
-`shoppingItems`
-
-Cada item possui `name`, `quantity`, `category`, `done`, `createdAt` e `owner`.
-
-As regras em `firestore.rules` exigem usuário autenticado. A autenticação anônima é feita automaticamente pelo aplicativo.
+As regras permitem leitura e gravação somente para usuários autenticados. A aplicação autentica cada visitante anonimamente antes de abrir a lista.
 
 ## Publicação no GitHub Pages
 
-Envie todos os arquivos do projeto para o repositório e publique pela branch principal, diretório raiz.
+Envie todos os arquivos mantendo a estrutura:
 
-Não remova `firebase.js`: ele contém a configuração do aplicativo Web do Firebase.
+- `index.html`
+- `firebase.js`
+- `js/app.js`
+- `css/style.css`
+- `manifest.json`
+- `firestore.rules`
+
+Não é necessário executar servidor local.
+
+## Importante
+
+A lista é compartilhada: os itens ficam na coleção `shoppingItems` e qualquer usuário autenticado anonimamente verá as alterações em tempo real.
